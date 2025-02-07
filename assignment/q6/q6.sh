@@ -1,0 +1,1 @@
+cat text.txt | tr -d " "| tr [a-z] [A-Z] | tr [A-Z] [C-ZBC]
