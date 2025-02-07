@@ -1,0 +1,4 @@
+Kolkata|West Bengal|India|100000
+Siliguri|West Bengal|India|75000
+Bangalore|Karnataka|India|125000
+Tokyo City|Tokyo|Japan|25000

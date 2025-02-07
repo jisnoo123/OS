@@ -1,0 +1,1 @@
+sort -t "|" -k2,2 -k4,4 text.txt
