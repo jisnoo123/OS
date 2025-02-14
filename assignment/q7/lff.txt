@@ -1,0 +1,5 @@
+24	.
+st2.txt
+st1.txt
+q7.sh
+lff.txt

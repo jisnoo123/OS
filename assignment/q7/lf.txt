@@ -1,0 +1,5 @@
+24	.
+4	./st2.txt
+4	./st1.txt
+4	./q7.sh
+4	./lff.txt
