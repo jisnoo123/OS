@@ -5,12 +5,13 @@ echo number of lines is $nol
 mkdir ./backup
 
 i=2
-while [ $i -le $nol ] do
-    fname = `cat lff.txt| head -$i | tail -1`
+while [ $i -le $nol ]
+do
+    fname=`cat lff.txt| head -$i | tail -1`
     chmod 777 $fname
     mv $fname backup
     i=`expr $i + 1`
 done
 
-#cd backup
-#ls -l
+cd backup
+ls -l
