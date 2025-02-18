@@ -2,6 +2,7 @@
 #define MAX 100
 int n,m;
 int max[MAX][MAX], available[MAX], allocation[MAX][MAX], need[MAX][MAX], work[MAX], finish[MAX], request[MAX];
+int ss[MAX], s=0;
 
 void input(){
     //Takes the necessary details
@@ -95,6 +96,8 @@ void safety(){
                 found = 1;
                 update_work(i);
                 finish[i] = 1;
+                ss[s]=i;
+                s++;
             }
         }
 
@@ -105,6 +108,10 @@ void safety(){
 
     if(check_finish()==1){
         printf("Safe sequence exists\n");
+        printf("Safe sequence:");
+        for(int i=0; i<s; i++){
+            printf("%d ", ss[i]);
+        }
     }
     else{
         printf("Safe sequence doesn't exist\n");
