@@ -2,7 +2,7 @@
 #include <stdio.h>
 int m,n;
 int available[MAX], request[MAX], max[MAX][MAX], allocation[MAX][MAX], need[MAX][MAX];
-int work[MAX], finish[MAX], seq[MAX], s=0;
+int work[MAX], finish[MAX], seq[MAX];
 
 void input(){
     printf("Enter no. of processes:");
@@ -21,7 +21,7 @@ void input(){
         printf("For Process %d", i);
         printf("____________\n");
         for(int j=0; j<m; j++){
-            printf("Resource %d No. of instances need:", j);
+            printf("Resource %d No. of instances max:", j);
             scanf("%d",&max[i][j]);
         }
     }
@@ -30,7 +30,7 @@ void input(){
 void init(){
     /*Initialization*/
     for(int i=0; i<n; i++){
-        for(int j=0;j<m; j++){
+        for(int j=0; j<m; j++){
             //Allocation = 0 initially
             allocation[i][j]=0;
             //Assuming that need = max
@@ -63,25 +63,31 @@ int check_finish(){
     return !flag;
 }
 
-void safety(){
+int safety(){
+    printf("_____Safety Algorithm_____\n");
     /* Safety algorithm*/
 
     //Initialization
     //Initialize work[] = available[]
-    for(int i=0; i<m; i++){
-        work[i]=available[i];
+    for(int j=0; j<m; j++){
+        work[j]=available[j];
     }
-    //Initialize finish[i] = false for all i
+    //Initialize finish[i] = false for all the processes
     for(int i=0; i<n; i++){
         finish[i] = 0; //No process has terminated
     }
+    //Initialize sequence
+    for(int i=0; i<n; i++){
+        seq[i] = -1;
+    }
 
+    int s=0;
     //Check for safe state
-    
     while(check_finish()!=1){
         int c=0; //Counter to check if no processes are found having the two conditions
         for(int i=0; i<n; i++){
             if(finish[i]==0 && need_work(i)==1){
+                printf("Found Process %d\n",i);
                 c++;
                 //Allocate needs by updating work
                 for(int j=0; j<m; j++){
@@ -99,17 +105,20 @@ void safety(){
         }
     }
 
-    if(check_finish()==1){
-        printf("\nThe system is in a safe state\n");
-        printf("Safe sequence is: ");
-        for(int i=0; i<n; i++){
-            printf("%d ", seq[i]);
+    return check_finish(); //Returns 1 if safe state otherwise returns 0
+}
+
+void undo_safety(){
+    //Undo safety 
+    for(int i=0; i<n; i++){
+        if(finish[i]==1){
+            for(int j=0; j<m; j++){
+                work[j]-=allocation[i][j];
+            }
         }
     }
-    else{
-        printf("\nSystem is in an unsafe state\n");
-    }
 }
+
 
 int req_need(int i){
     /*Compares request with need. 
@@ -119,12 +128,13 @@ int req_need(int i){
     for(int j=0; j<m; j++){
         if(request[j]>need[i][j]){
             flag++;
+            break;
         }
     }
     return !flag;
 }
 
-int req_available(int i){
+int req_available(){
     /*Compares request with available. 
     Returns 1 if request_i<=available[i][] otherwise returns 0
     */
@@ -132,6 +142,7 @@ int req_available(int i){
     for(int j=0; j<m; j++){
         if(request[j]>available[j]){
             flag++;
+            break;
         }
     }
     return !flag;
@@ -140,51 +151,106 @@ int req_available(int i){
 void resource_request(int i){
     /*Resource request algorithm*/
     if(req_need(i)==1){
-        if(req_available(i)==1){
+        if(req_available()==1){
             //Modify the states
             for(int j=0; j<m; j++){
-                available[j]+=request[j];
+                available[j]-=request[j];
                 allocation[i][j]+=request[j];
                 need[i][j]-=request[j];
             }
         }
         else{
-            printf("Process %d Resources unavailable\n",i);
+            printf("\nProcess %d Resources unavailable\n",i);
         }
     }
     else{
-        printf("Process %d Request exceeds need\n",i);
-    }
-}
-    
-void display_allocation(){
-    //Display the allocation
-    for(int i=0; i<n; i++){
-        printf("Process %d Resources allocated____\n",i);
-        for(int j=0; j<m; j++){
-            printf("Resource %d Allocated:%d ",j,allocation[i][j]);
-        }
-        printf("\n");
+        printf("\nProcess %d Request exceeds need\n",i);
     }
 }
 
-void allocate(){
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            //Process i requesting
-            request[j] = need[i][j];
-        }
-        //Check if can be granted or process needs to wait
-        resource_request(i);
+void undo_resource_request(int i){
+    //Undo resource request
+    for(int j=0; j<m; j++){
+        available[j]+=request[j];
+        allocation[i][j]-=request[j];
+        need[i][j]+=request[j];
     }
-    //Check if system can be in a safe state
-    safety(); 
+}
+
+void display(){
+    //Display all necessary details
+    for(int i=0; i<n; i++){
+        printf("Process %d___\n",i);
+
+        printf("\nResources allocated:\n");
+        for(int j=0; j<m; j++){
+            printf("Resource %d Allocated:%d \n",j,allocation[i][j]);
+        }
+        printf("\nResources need:\n");
+        for(int j=0; j<m; j++){
+            printf("Resource %d Need:%d \n",j,need[i][j]);
+        }
+        printf("\nResources max:\n");
+        for(int j=0; j<m; j++){
+            printf("Resource %d Max:%d \n",j,max[i][j]);
+        }
+    }
+
+    printf("Resources available:\n");
+    for(int j=0; j<m; j++){
+        printf("Resource %d Available: %d\n", j,available[j]);
+    }
+}
+
+void computation(){
+    int ch,pid;
+    do{
+        printf("Enter 1 for request or 2 to end:");
+        scanf("%d",&ch);
+        if(ch==1){
+            //Request
+            printf("Enter the process number that requests:");
+            scanf("%d",&pid);
+            //Take the number of resources requested for each resource type
+            printf("For process %d ____\n", pid);
+            for(int j=0; j<m; j++){
+                printf("Enter request of resource %d: ",j);
+                scanf("%d",&request[j]);
+                printf("\n");
+            }
+
+            //Check allocation with resource allocation
+            resource_request(pid);
+            printf("After resource request__\n");
+            display();
+
+            if(safety()==1){
+                //Safe state
+                printf("System is in a safe state\n");
+                printf("Safe sequence is:\n");
+                for(int i=0; i<n; i++){
+                    printf("%d ", seq[i]);
+                }
+            }
+            else{
+                //Unsafe state
+                printf("System is in an unsafe state\n");
+                //Undo resource request
+                undo_safety();
+                //Undo safety
+                undo_resource_request(pid);
+            }
+        }
+    }
+    while(ch!=2);
 }
 
 int main(){
     input();
+    printf("Initial Details:\n");
+    display();
     init();
-    allocate();
-    printf("\nFinally the allocation is:");
-    display_allocation();
+    computation();
+    printf("Final Details:");
+    display();
 }
