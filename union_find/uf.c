@@ -6,7 +6,7 @@ int n;
 int gr[MAX][MAX],c=0;
 struct node{
     int vertex;
-    //int representative;
+    int representative;
     struct node *link;
 };
 
@@ -66,7 +66,7 @@ void union_vertices(int u, int v){
         t->vertex = u;
         set[u] = set[v];
         t->link = NULL;
-        t->representative = set[v]->representative;
+        t->representative = v;
     }
     else{
         // v is isolated. So join it with u
@@ -79,7 +79,7 @@ void union_vertices(int u, int v){
         t->vertex = v;
         set[v] = set[u];
         t->link = NULL;
-        t->representative = set[u]->representative;
+        t->representative = u;
     }
 }
 
