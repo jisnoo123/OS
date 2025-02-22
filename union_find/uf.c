@@ -2,7 +2,7 @@
 #define MAX 100
 #include <stdio.h>
 #include <stdlib.h>
-int n;
+int n,re[MAX];
 int gr[MAX][MAX],c=0;
 struct node{
     int vertex;
@@ -101,17 +101,6 @@ void connected_component(){
                     //Edge is present between i and j
                     if(findset(i)!=findset(j)){
                         union_vertices(i,j);
-                        printf("Between %d and %d", i,j);
-                        //Print the rep ele
-                        printf("\nRepresentative element:\n");
-                        for(int i=0; i<n; i++){
-                            printf("%d ", set[i]->representative);
-                        }
-                        printf("\n");
-                        for(int i=0; i<n; i++){
-                            printf("%d ",i);
-                        }
-                        printf("\n");
                     }
                     else{
                         c++;
@@ -126,8 +115,21 @@ void result(){
     if(c!=0){
         printf("Circuit is present in the graph\n");
     }
-
+    for(int i=0; i<n; i++){
+        re[i] = set[i]->representative;
+    }
+    int cg=0;
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(i==re[j]){
+                cg++;
+                break;
+            }
+        }
+    }
+    printf("No. of connected graphs: %d\n",cg);
 }
+
 void display_graph(){
     //Displays the adjacency matrix
     for(int i=0; i<n; i++){
@@ -143,9 +145,23 @@ void display_graph(){
     }
 }
 
+void display_rep_ele(){
+    printf("\nRepresentative elements with vertex number underneath:\n");
+    printf(" ");
+    for(int i=0; i<n; i++){
+        printf("  %d  ",set[i]->representative);
+    }
+    printf("\n ");
+    for(int i=0; i<n; i++){
+        printf(" (%d) ",i);
+    }
+    printf("\n");
+}
+
 int main(){
     input();
     display_graph();
     connected_component();
+    display_rep_ele();
     result();
 }
