@@ -7,6 +7,7 @@ i=2
 while [ $i -le $n ]
 do
     word=$i
+    shift 1
     if [ $max_c -gt `echo $word|wc -m` ]
     then
         max=$word
@@ -18,6 +19,7 @@ do
         min=$word
         min_c=`echo $word|wc -m`
     fi
+    i=`expr $i + 1`
 done
 echo "Max is $max"
 echo "Min is $min"
