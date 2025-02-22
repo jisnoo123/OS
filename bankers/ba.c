@@ -64,7 +64,7 @@ int check_finish(){
 }
 
 int safety(){
-    printf("_____Safety Algorithm_____\n");
+    printf("\n_____Safety Algorithm_____\n");
     /* Safety algorithm*/
 
     //Initialization
@@ -87,7 +87,6 @@ int safety(){
         int c=0; //Counter to check if no processes are found having the two conditions
         for(int i=0; i<n; i++){
             if(finish[i]==0 && need_work(i)==1){
-                printf("Found Process %d\n",i);
                 c++;
                 //Allocate needs by updating work
                 for(int j=0; j<m; j++){
@@ -179,33 +178,37 @@ void undo_resource_request(int i){
 
 void display(){
     //Display all necessary details
+    printf("\tAllocate\tNeed\tMax\n");
+    printf("\tA B C\t\tA B C\tA B C\n");
+
     for(int i=0; i<n; i++){
-        printf("Process %d___\n",i);
+        printf("P%d\t",i);
 
-        printf("\nResources allocated:\n");
         for(int j=0; j<m; j++){
-            printf("Resource %d Allocated:%d \n",j,allocation[i][j]);
+            printf("%d ", allocation[i][j]);
         }
-        printf("\nResources need:\n");
+        printf("\t\t");
         for(int j=0; j<m; j++){
-            printf("Resource %d Need:%d \n",j,need[i][j]);
+            printf("%d ", need[i][j]);
         }
-        printf("\nResources max:\n");
+        printf("\t");
         for(int j=0; j<m; j++){
-            printf("Resource %d Max:%d \n",j,max[i][j]);
+            printf("%d ", max[i][j]);
         }
+        printf("\n");
     }
-
-    printf("Resources available:\n");
+    printf("\n\tAvailable\n");
+    printf("\tA B C\n");
+    printf("\t");
     for(int j=0; j<m; j++){
-        printf("Resource %d Available: %d\n", j,available[j]);
+        printf("%d ",available[j]);
     }
 }
 
 void computation(){
     int ch,pid;
     do{
-        printf("Enter 1 for request or 2 to end:");
+        printf("\nEnter 1 for request or 2 to end:");
         scanf("%d",&ch);
         if(ch==1){
             //Request
@@ -229,7 +232,7 @@ void computation(){
                 printf("System is in a safe state\n");
                 printf("Safe sequence is:\n");
                 for(int i=0; i<n; i++){
-                    printf("%d ", seq[i]);
+                    printf("P%d ", seq[i]);
                 }
             }
             else{
@@ -239,6 +242,8 @@ void computation(){
                 undo_safety();
                 //Undo safety
                 undo_resource_request(pid);
+                printf("After undoing resource request and safety:\n");
+                display();
             }
         }
     }
@@ -251,6 +256,7 @@ int main(){
     display();
     init();
     computation();
-    printf("Final Details:");
+    printf("Final Details:\n");
     display();
+    printf("\n");
 }
