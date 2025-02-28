@@ -1,25 +1,17 @@
-min=$1
-max=$min
-min_c=`$1|wc -m`
-max_c=$min_c
+# Shell script to find the largest and smallest word passed as comm line args
 n=$#
-i=2
-while [ $i -le $n ]
+rm text.txt
+touch text.txt
+for (( i=1; i<=$n; i++))
 do
-    word=$i
+    nc=`echo $1| wc -c`
+    echo "$1 | $nc" >> text.txt
     shift 1
-    if [ $max_c -gt `echo $word|wc -m` ]
-    then
-        max=$word
-        max_c=`echo $word|wc -m`
-    fi
-
-    if [ $min_c -lt `echo $word|wc -m` ]
-    then
-        min=$word
-        min_c=`echo $word|wc -m`
-    fi
-    i=`expr $i + 1`
 done
-echo "Max is $max"
-echo "Min is $min"
+
+sort -t "|" -k2 -nr text.txt >> final.txt
+nl=`cat final.txt| wc -l`
+max=`cat final.txt| head -1`
+min=`cat final.txt| head -$nl| tail -1`
+echo "Highest: $max"
+echo "Least: $min"
