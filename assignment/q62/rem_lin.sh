@@ -1,0 +1,1 @@
+sed '/Linux/d' hi.txt
